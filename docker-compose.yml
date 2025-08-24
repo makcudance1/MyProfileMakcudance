@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      # Монтируем статические файлы для разработки
+      - ./index.html:/usr/share/nginx/html/index.html:ro
+      # Монтируем конфигурацию nginx для быстрого обновления
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
+    container_name: nginx-app
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    restart: unless-stopped
+    container_name: postgres-db
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge 
