@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   nginx:
-    build: .
+    build: .   # ищи в текущий директории Dockerfile либо
     ports:
-      - "8080:80"
+      - "8080:80"  # обращаемся к нашему локальному порту: а 80ый это порт в контейнере для Nginx
     volumes:
       # Монтируем статические файлы для разработки
       - ./index.html:/usr/share/nginx/html/index.html:ro
@@ -23,11 +23,11 @@ services:
       POSTGRES_DB: myapp
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password123
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     restart: unless-stopped
     container_name: postgres-db
     networks:
